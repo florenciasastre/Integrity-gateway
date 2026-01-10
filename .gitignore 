@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Streamlit
+.streamlit/
+
+# Logs / DB / Index
+logs/
+*.sqlite3
+index/
+*.pkl
+
+# OS
+.DS_Store

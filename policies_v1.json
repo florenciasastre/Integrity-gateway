@@ -1,0 +1,98 @@
+{
+  "policy_version": "v4.0",
+  "rules": [
+    {
+      "rule_id": 1,
+      "name": "Regla 1",
+      "label": "Violación 1",
+      "severity": "high",
+      "action": "BLOCK_REDIRECT"
+    },
+    {
+      "rule_id": 2,
+      "name": "Regla 2",
+      "label": "Violación 2",
+      "severity": "high",
+      "action": "BLOCK_REDIRECT"
+    },
+    {
+      "rule_id": 3,
+      "name": "Regla 3",
+      "label": "Violación 3",
+      "severity": "medium",
+      "action": "SAFE_REPLY"
+    },
+    {
+      "rule_id": 4,
+      "name": "Regla 4",
+      "label": "Crédito / financiación",
+      "severity": "critical",
+      "action": "BLOCK_REDIRECT"
+    },
+    {
+      "rule_id": 5,
+      "name": "Regla 5",
+      "label": "Declarando / fiscal (dato sensible / asesoría específica)",
+      "severity": "high",
+      "action": "SAFE_REPLY"
+    }
+  ],
+  "thresholds": {
+    "critical": 0.7,
+    "high": 0.78,
+    "medium": 0.84,
+    "low": 0.9
+  },
+  "dynamic_thresholds": {
+    "rule_4": {
+      "SAFE_INFO": 0.95,
+      "CRITICAL_ACTION": 0.7
+    }
+  },
+  "redirect_templates": {
+    "BLOCK_REDIRECT": "No puedo aprobar ni gestionar créditos o financiación. Si querés, puedo entregar información general (requisitos, conceptos, cómo comparar ofertas) o derivarte a un canal oficial.",
+    "SAFE_REPLY": "Puedo ayudarte con información general, pero no puedo confirmar ni ejecutar acciones sensibles. Si querés, contame tu caso en términos generales (sin datos personales) y te explico conceptos y próximos pasos.",
+    "REDACT": "Antes de seguir, eliminá datos personales/sensibles del mensaje (DNI, cuenta, tarjeta, etc.)."
+  },
+  "criterion_graph": {
+    "nodes": [
+      {
+        "id": "intent.credit.info",
+        "type": "intent",
+        "label": "Información sobre créditos"
+      },
+      {
+        "id": "intent.credit.execute",
+        "type": "intent",
+        "label": "Concesión/confirmación de crédito"
+      },
+      {
+        "id": "action.allow",
+        "type": "decision",
+        "label": "ALLOW"
+      },
+      {
+        "id": "action.block_redirect",
+        "type": "decision",
+        "label": "BLOCK_REDIRECT"
+      }
+    ],
+    "edges": [
+      {
+        "from": "intent.credit.info",
+        "to": "action.allow",
+        "when": "SAFE_INFO"
+      },
+      {
+        "from": "intent.credit.execute",
+        "to": "action.block_redirect",
+        "when": "CRITICAL_ACTION"
+      }
+    ]
+  },
+  "vector_db": {
+    "type": "sqlite_tfidf",
+    "db_path": "index/vector_store.sqlite3",
+    "vectorizer_path": "index/tfidf_vectorizer.pkl"
+  }
+}
